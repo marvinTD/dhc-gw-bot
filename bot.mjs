@@ -19,6 +19,8 @@ function updateTimeLeft() {
   if (timeLeft > 0) {
     timeLeft -= 10000;
     timeRemainingMessage.edit(`\`\`\`Time remaining in the current Guild War:\n${timeHelpers.msToTime(timeLeft)}\n\`\`\``);
+  } else {
+    clearInterval(timer);
   }
 }
 
@@ -42,13 +44,14 @@ client.on('message', (msg) => {
       clearTimeout(warEnd);
       clearInterval(timer);
       timeLeft = 0;
+      timeRemainingMessage.edit('```Time remaining in the current Guild War:\n00h:00m:00s\n```');
     }
   }
 });
 
 client.on('ready', () => {
   const channel = client.channels.get(discordIds.timeRemainingChannel);
-  timeRemainingMessage = channel.fetchMessage('541770892259229749')
+  timeRemainingMessage = channel.fetchMessage(discordIds.timeRemainingMessage)
     .then(message => timeRemainingMessage = message)
     .catch(console.error);
   setInterval(heartbeat, 30000);
