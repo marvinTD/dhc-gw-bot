@@ -52,7 +52,7 @@ client.on('message', (msg) => {
 client.on('ready', () => {
   const channel = client.channels.get(discordIds.timeRemainingChannel);
   timeRemainingMessage = channel.fetchMessage(discordIds.timeRemainingMessage)
-    .then(message => timeRemainingMessage = message)
+    .then((message) => { timeRemainingMessage = message; })
     .catch(console.error);
   setInterval(heartbeat, 30000);
 });
