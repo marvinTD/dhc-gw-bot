@@ -1,51 +1,28 @@
 import Discord from 'discord.js';
-import timeHelpers from './lib/convert-time';
 import discordIds from './lib/discord-ids';
+import War from './lib/war';
 
 const client = new Discord.Client();
 client.login(process.env.CLIENT_SECRET);
 
-let warWarning;
-let warEnd;
-let timeLeft;
-let timer;
+let war;
 let timeRemainingMessage;
 
 function heartbeat() {
   client.channels.get(discordIds.testChannel).send(`❤ ${(new Date()).toUTCString()} ❤`);
 }
 
-function updateTimeLeft() {
-  if (timeLeft > 0) {
-    timeLeft -= 10000;
-    timeRemainingMessage.edit(`\`\`\`Time remaining in the current Guild War:\n${timeHelpers.msToTime(timeLeft)}\n\`\`\``);
-  } else {
-    clearInterval(timer);
-  }
-}
-
 client.on('message', (msg) => {
   if (msg.member.roles.get(discordIds.adminRole)) {
     if (msg.content.startsWith('!war start')) {
-      // currently requires format _h_m
-      const warDuration = timeHelpers.convertToMs(msg.content.split(' ')[2]);
-      timeLeft = warDuration.ms;
-      timer = setInterval(updateTimeLeft, 10000);
-      msg.channel.send(`@here Guild War has started with a duration of ${warDuration.text}`);
-      if (warDuration.ms > 3600000) {
-        warWarning = setTimeout(() => { msg.channel.send('@here One hour left in war!'); }, warDuration.ms - 3600000);
+      if (war && war.active()) {
+        msg.channel.send('Unable to start war; there is an ongoing war');
+      } else {
+        // TODO: Refactor timeRemainingMessage; clear msgs in channel, create and use upon init?
+        war = new War(client, msg, msg.content.split(' ')[2], timeRemainingMessage); // duration must be in _h_m format
       }
-      warEnd = setTimeout(() => { msg.channel.send('War has ended.'); }, warDuration.ms);
     }
-
-    if (msg.content === '!war end') {
-      msg.channel.send('Current Guild War has been ended.');
-      clearTimeout(warWarning);
-      clearTimeout(warEnd);
-      clearInterval(timer);
-      timeLeft = 0;
-      timeRemainingMessage.edit('```Time remaining in the current Guild War:\n00h:00m:00s\n```');
-    }
+    if (msg.content === '!war end') { war.endWar(msg); }
   }
 });
 
@@ -53,6 +30,6 @@ client.on('ready', () => {
   const channel = client.channels.get(discordIds.timeRemainingChannel);
   timeRemainingMessage = channel.fetchMessage(discordIds.timeRemainingMessage)
     .then((message) => { timeRemainingMessage = message; })
-    .catch(console.error);
+    .catch(console.error); // eslint-disable-line no-console
   setInterval(heartbeat, 30000);
 });
