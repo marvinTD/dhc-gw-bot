@@ -8,6 +8,7 @@ client.login(process.env.CLIENT_SECRET);
 let war;
 let timeRemainingMessage;
 
+// TODO: Refactor to not spam a channel
 function heartbeat() {
   client.channels.get(discordIds.testChannel).send(`❤ ${(new Date()).toUTCString()} ❤`);
 }
