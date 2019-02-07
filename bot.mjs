@@ -34,3 +34,8 @@ client.on('ready', () => {
     .catch(logger.error);
   setInterval(heartbeat, 30000);
 });
+
+client.on('error', (err) => {
+  logger.error(err);
+  process.exit(1);
+});
