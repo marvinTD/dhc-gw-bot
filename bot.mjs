@@ -1,4 +1,5 @@
 import Discord from 'discord.js';
+import logger from './lib/logger';
 import discordIds from './lib/discord-ids';
 import War from './lib/war';
 
@@ -8,9 +9,8 @@ client.login(process.env.CLIENT_SECRET);
 let war;
 let timeRemainingMessage;
 
-// TODO: Refactor to not spam a channel
 function heartbeat() {
-  client.channels.get(discordIds.testChannel).send(`❤ ${(new Date()).toUTCString()} ❤`);
+  logger.info('Bot is up!');
 }
 
 client.on('message', (msg) => {
@@ -31,6 +31,6 @@ client.on('ready', () => {
   const channel = client.channels.get(discordIds.timeRemainingChannel);
   timeRemainingMessage = channel.fetchMessage(discordIds.timeRemainingMessage)
     .then((message) => { timeRemainingMessage = message; })
-    .catch(console.error); // eslint-disable-line no-console
+    .catch(logger.error);
   setInterval(heartbeat, 30000);
 });

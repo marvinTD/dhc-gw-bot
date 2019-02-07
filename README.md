@@ -21,7 +21,6 @@ Cancel/end an ongoing war
 ## Getting Started:
 Required environment variables (can create/place in .env):
 ```
-DISCORD_TEST_CHANNEL_ID=<Channel Id for Heartbeat>
 DISCORD_TIME_REMAINING_CHANNEL_ID=<Channel Id for Timer>
 DISCORD_TIME_REMAINING_MESSAGE_ID=<Message Id for Timer>
 DISCORD_ADMIN_ID=<Role Id for Admin>
