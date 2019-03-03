@@ -17,13 +17,19 @@ client.on('message', (msg) => {
   if (msg.member.roles.get(discordIds.adminRole)) {
     if (msg.content.startsWith('!war start')) {
       if (war && war.active()) {
-        msg.channel.send('Unable to start war; there is an ongoing war');
+        msg.channel.send('Unable to start war; there is an ongoing war.');
       } else {
         // TODO: Refactor timeRemainingMessage; clear msgs in channel, create and use upon init?
-        war = new War(client, msg, msg.content.split(' ')[2], timeRemainingMessage); // duration must be in _h_m format
+        war = new War(client, msg, msg.content.split(' ')[2], timeRemainingMessage);
       }
     }
-    if (msg.content === '!war end') { war.endWar(msg); }
+    if (msg.content === '!war end') {
+      if (!war || !war.active()) {
+        msg.channel.send('There is no ongoing war.');
+      } else {
+        war.endWar(msg);
+      }
+    }
   }
 });
 
