@@ -37,10 +37,8 @@ client.on('ready', () => {
 
 client.on('error', (err) => {
   logger.error(err);
-  process.exit(1);
 });
 
 process.on('uncaughtException', (exception) => {
   logger.error(exception);
-  process.exit(1);
 });
